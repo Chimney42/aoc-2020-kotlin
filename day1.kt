@@ -7,7 +7,7 @@ fun main(args: Array<String>) {
 
     inputStream.bufferedReader().forEachLine { lineList.add(it.toInt()) }
     var product: Int = 0;
-    for (x: Int in lineList) {
+     loop@ for (x: Int in lineList) {
       for (y: Int in lineList) {
         for (z: Int in lineList) {
           if (x != y && y != z && x != z && 2020 == x + y + z) {
@@ -15,12 +15,10 @@ fun main(args: Array<String>) {
             print("y: " + y + "\n")
             print("z: " + z + "\n")
             product = x * y * z
-            break
+            break@loop
           }
         }
-        if (0 != product) break
       }
-      if (0 != product) break
     }
     print(product.toString() + "\n");
 }
