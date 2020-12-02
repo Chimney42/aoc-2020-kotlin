@@ -7,13 +7,17 @@ fun main(args: Array<String>) {
 
     inputStream.bufferedReader().forEachLine { lineList.add(it.toInt()) }
     var product: Int = 0;
-     loop@ for (x: Int in lineList) {
-      for (y: Int in lineList) {
-        for (z: Int in lineList) {
-          if (x != y && y != z && x != z && 2020 == x + y + z) {
-            print("x: " + x + "\n")
-            print("y: " + y + "\n")
-            print("z: " + z + "\n")
+    val listSize: Int = lineList.size
+    print("listsize " + listSize + "\n")
+     loop@ for (x: Int in 0..listSize) {
+      for (y: Int in x+1..listSize) {
+        if (y >= listSize) break
+        for (z: Int in y+1..listSize) {
+          if (z >= listSize) break
+          if (2020 == lineList.get(x) + lineList.get(y) + lineList.get(z)) {
+            print("x: " + lineList.get(x) + "\n")
+            print("y: " + lineList.get(y) + "\n")
+            print("z: " + lineList.get(z) + "\n")
             product = x * y * z
             break@loop
           }
