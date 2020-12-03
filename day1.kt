@@ -1,7 +1,7 @@
 import java.io.File
 import java.io.InputStream
 
-fun main(args: Array<String>) {
+fun main() {
     val inputStream: InputStream = File("data/day1-input.txt").inputStream()
     val lineList = mutableListOf<Int>()
 
