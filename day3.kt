@@ -3,7 +3,7 @@ import java.io.InputStream
 
 fun hasTree(x: Int, y: Int, map: List<List<String>>): Boolean {
   val realX = x%map.get(0).size
-  return "#" == map.get(y).get(realX)
+  return map.get(y).get(realX).equals("#")
 }
 
 fun createMap(): List<List<String>> {
