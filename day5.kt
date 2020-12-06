@@ -1,32 +1,36 @@
 import java.io.File
 import java.io.InputStream
 
-fun findRow(instructions: String): Int {
-  var currentRange = IntRange(0, 128)
-  instructions.forEach {
-    currentRange = when (it) {
-      "F".single() -> IntRange(currentRange.first(), currentRange.last() - currentRange.count() / 2)
-      "B".single() -> IntRange(currentRange.first() + currentRange.count() / 2, currentRange.last()) 
-      else -> currentRange
+fun convertBinaryToDecimal(binaryNumber: String): Int {
+    var num = binaryNumber.toLong()
+    var decimalNumber = 0
+    var i = 0
+    var remainder: Long
+
+    while (num.toInt() != 0) {
+        remainder = num % 10
+        num /= 10
+        decimalNumber += (remainder * Math.pow(2.0, i.toDouble())).toInt()
+        ++i
     }
-  }
-  return currentRange.first()
+    return decimalNumber
 }
 
-fun findColumn(instructions: String): Int {
-  var currentRange = IntRange(0, 8)
-  instructions.forEach {
-    currentRange = when (it) {
-      "L".single() -> IntRange(currentRange.first(), currentRange.last() - currentRange.count() / 2)
-      "R".single() -> IntRange(currentRange.first() + currentRange.count() / 2, currentRange.last()) 
-      else -> currentRange
-    }
-  }
-  return currentRange.first()
-}
+fun convertDecimalToBinary(decimalNumber: Int): Long {
+    var n = decimalNumber
+    var binaryNumber: Long = 0
+    var remainder: Int
+    var i = 1
+    var step = 1
 
-fun calculateSeatId(row: Int, column: Int): Int {
-  return row * 8 + column
+    while (n != 0) {
+        remainder = n % 2
+        System.out.printf("Step %d: %d/2, Remainder = %d, Quotient = %d\n", step++, n, remainder, n / 2)
+        n /= 2
+        binaryNumber += (remainder * i).toLong()
+        i *= 10
+    }
+    return binaryNumber
 }
 
 fun main() {
@@ -35,9 +39,8 @@ fun main() {
   val allSeatsIds = IntRange(0, 127 * 8 + 7)
   val occupiedSeatIds = mutableListOf<Int>()
   inputStream.bufferedReader().forEachLine {
-    val row = findRow(it.slice(IntRange(0, 6)))
-    val column = findColumn(it.slice(IntRange(7, 9)))
-    val seatId = calculateSeatId(row, column)
+    val binarySeatId = it.replace("F", "0").replace("B", "1").replace("L", "0").replace("R", "1")
+    val seatId = convertBinaryToDecimal(binarySeatId)
     occupiedSeatIds.add(seatId)
   }
   var mySeatId: Int = -1
