@@ -1,9 +1,9 @@
 import java.io.File
 import java.io.InputStream
 
-fun buildTree(): HashMap<String,MutableList<String>> {
+fun buildTree(): HashMap<String,HashMap<String, Int>> {
   val inputStream: InputStream = File("data/day7-input.txt").inputStream()
-  val innerToOuterBagTree = hashMapOf<String,MutableList<String>>()
+  val outerInnerBagMap = hashMapOf<String,HashMap<String, Int>>()
   val bagColorPattern = "(\\d)* *(\\w+ \\w+) bag".toRegex()
   
   inputStream.bufferedReader().forEachLine {
@@ -13,34 +13,37 @@ fun buildTree(): HashMap<String,MutableList<String>> {
     innerBagsList.forEach {
       val (count, innerBagColor) = bagColorPattern.find(it)!!.destructured
       if ("no other" != innerBagColor) {
-        var outerBagListForInnerBag = innerToOuterBagTree.get(innerBagColor)
-        if (outerBagListForInnerBag == null) { outerBagListForInnerBag = mutableListOf<String>() }
-        outerBagListForInnerBag.add(outerBagColor)
-        innerToOuterBagTree.put(innerBagColor, outerBagListForInnerBag)
+        var innerBagList = outerInnerBagMap.get(outerBagColor)
+        if (innerBagList == null) { innerBagList = hashMapOf<String, Int>() }
+        innerBagList.put(innerBagColor, count.toInt())
+        outerInnerBagMap.put(outerBagColor, innerBagList)
       }
     }
   }
-  return innerToOuterBagTree
+  return outerInnerBagMap
 }
 
-fun traverse(root: String, tree: HashMap<String,MutableList<String>>, traversed: MutableSet<String>): MutableSet<String> {
-  val traversedColors = traversed
-  val outerBagList = tree.get(root)
-  if (outerBagList != null) {
-    traversedColors.addAll(outerBagList)
-    outerBagList.forEach {
-      traversedColors.addAll(traverse(it, tree, traversedColors))
+fun traverse(root: String, tree: HashMap<String,HashMap<String, Int>>, multiplier: Int, bagCount: Int): Int {
+  var currentCount = bagCount
+  val traversedBags = mutableSetOf<String>()
+  val innerBagList = tree.get(root)
+  if (innerBagList != null) {
+    innerBagList.forEach {
+      println("color " + it.key)
+      println("count " + it.value)
+      currentCount += it.value * multiplier
+      traversedBags.add(it.key)
+      println("currentCount " + currentCount)
+      currentCount = traverse(it.key, tree, it.value * multiplier, currentCount)
     }
   }
-  return traversedColors
+  return currentCount
 }
 
 fun main() {
-  val innerToOuterBagTree = buildTree()
-  println(innerToOuterBagTree)
+  val outerInnerBagMap = buildTree()
+  println("map " + outerInnerBagMap)
   val startColor = "shiny gold"
 
-  val traversedColors = traverse(startColor, innerToOuterBagTree, mutableSetOf<String>()).distinct()
-  println(traversedColors)
-  println(traversedColors.size)
+  println(traverse(startColor, outerInnerBagMap, 1, 0))
 }
