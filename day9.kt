@@ -9,25 +9,25 @@ class Instruction(code: String, number: Int) {
 fun main() {
   val inputStream: InputStream = File("data/day9-input.txt").inputStream()
   val last25Numbers = mutableListOf<Long>()
-  var wrongNumber: Long = -1
+  val wrongNumber: Long = 507622668
+  //val wrongNumber: Long = 127
   val preambleLength = 25
   inputStream.bufferedReader().forEachLine {
     if (last25Numbers.size >= preambleLength) {
-      var numberIsValid = false
-      loop@ for (i in 0 until preambleLength) {
-        for (j in 1 until preambleLength-1) {
-          if (last25Numbers[i] + last25Numbers[j] == it.toLong()) {
-            numberIsValid = true
+      loop@ for (i in 0 until preambleLength-1) {
+        for (j in 1 until preambleLength) {
+          val range = last25Numbers.slice(IntRange(i, j))
+          val sum = range.sum()
+          if (sum == wrongNumber) {
+            val max = range.maxOrNull()!!
+            val min = range.minOrNull()!!
+            println(max + min)
             break@loop
           }
         }
-      }
-      if (!numberIsValid) {
-        wrongNumber = it.toLong()
       }
       last25Numbers.removeAt(0)
     }
     last25Numbers.add(it.toLong())
   }
-  println(wrongNumber)
 }
