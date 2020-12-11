@@ -11,12 +11,40 @@ fun buildMap(): MutableList<MutableList<String>> {
   return map
 }
 
+enum class Direction {
+  NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST
+}
+
+fun findFirstSeatInLineOfSight(map: MutableList<MutableList<String>>, x: Int, y: Int, dir: Direction): String {
+  var diffX = when (dir) {
+    Direction.NORTHEAST, Direction.EAST, Direction.SOUTHEAST -> 1
+    Direction.NORTHWEST, Direction.WEST, Direction.SOUTHWEST -> -1
+    else -> 0
+  }
+
+  var diffY = when (dir) {
+    Direction.NORTHWEST, Direction.NORTH, Direction.NORTHEAST -> -1
+    Direction.SOUTHWEST, Direction.SOUTH, Direction.SOUTHEAST -> 1
+    else -> 0
+  }
+  
+  var nextX = x + diffX
+  var nextY = y + diffY
+  var nextSeatInSight = ""
+  while (nextSeatInSight.isEmpty() && !(nextY < 0 || nextY >= map.size || nextX < 0 || nextX >= map[0].size)) {
+    var nextTile = map[nextY][nextX]
+    if (nextTile != ".") nextSeatInSight = nextTile
+    nextX += diffX
+    nextY += diffY
+  }
+  return nextSeatInSight
+}
+
 fun getAdjacentOccupiedSeats(map: MutableList<MutableList<String>>, x: Int, y: Int): Int {
   var occupiedSeats = 0
-  for (i in y - 1 until y + 2) {
-    for (j in x - 1 until x + 2) {
-      occupiedSeats += if (i == y && j == x) 0 else if (i < 0 || i >= map.size || j < 0 || j >= map[0].size) 0 else if (map[i][j] == "#") 1 else 0
-    }
+  for (direction in Direction.values()) {
+    val firstSeat = findFirstSeatInLineOfSight(map, x, y, direction)
+    occupiedSeats += if (firstSeat == "#") 1 else 0
   }
   return occupiedSeats
 }
@@ -33,7 +61,7 @@ fun main() {
         val currentSeatState = oldMap[y][x]
         if (currentSeatState == "L" && getAdjacentOccupiedSeats(oldMap, x, y) == 0) {
           row.add("#")
-        } else if (currentSeatState == "#" && getAdjacentOccupiedSeats(oldMap, x, y) >= 4) {
+        } else if (currentSeatState == "#" && getAdjacentOccupiedSeats(oldMap, x, y) >= 5) {
           row.add("L")
         } else {
           row.add(currentSeatState)
