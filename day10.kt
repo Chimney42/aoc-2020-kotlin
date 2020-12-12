@@ -4,22 +4,20 @@ import java.io.InputStream
 
 fun main() {
   val adapterJoltages = mutableListOf<Int>()
-
+  adapterJoltages.add(0)
   val inputStream: InputStream = File("data/day10-input.txt").inputStream()
-  inputStream.bufferedReader().forEachLine { 
+  inputStream.bufferedReader().forEachLine {
     adapterJoltages.add(it.toInt())
   }
   adapterJoltages.sort()
   adapterJoltages.add(adapterJoltages.last()+3)
   println(adapterJoltages)
 
-  val joltageDifferences = hashMapOf<Int, Int>()
-  var lastJoltage = 0
-  adapterJoltages.forEach {
-    val diff = it - lastJoltage
-    val diffCount = joltageDifferences.get(diff) ?: 0
-    joltageDifferences.put(diff, diffCount+1)
-    lastJoltage = it
+  val pathsForAdapter: MutableMap<Int,Long> = mutableMapOf(0 to 1L)
+  adapterJoltages.drop(1).forEach { adapter ->
+      pathsForAdapter[adapter] = IntRange(1, 3).map { range -> 
+          pathsForAdapter.getOrDefault(adapter - range, 0) 
+      }.sum()
   }
-  println(joltageDifferences.get(1)!! * joltageDifferences.get(3)!!)
+  println(pathsForAdapter.getValue(adapterJoltages.last()))
 }
