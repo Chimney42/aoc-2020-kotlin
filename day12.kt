@@ -22,23 +22,36 @@ enum class Direction {
   abstract val diffY: Int
 }
 
-class Ship() {
+class Ship {
+  class Waypoint {
+    var diffX = 10
+    var diffY = -1
+  }
+
+  var waypoint: Waypoint = Waypoint()
   var direction: Direction = Direction.EAST
   var currentX: Int = 0
   var currentY: Int = 0
 
   fun moveForward(value: Int) {
-    currentX += direction.diffX * value
-    currentY += direction.diffY * value
+    currentX += waypoint.diffX * value
+    currentY += waypoint.diffY * value
   }
 
   fun turn(orientation: String, value: Int) {
-    var ordinalOffset = when (orientation) {
-      "L" -> (value / 90) * -1 + 4
-      else -> value / 90 + 4
+    for (i in 0 until value/90) {
+      val diffX = when (orientation) {
+        "R" -> waypoint.diffY * -1
+        else -> waypoint.diffY
+      }
+      val diffY = when (orientation) {
+        "L" -> waypoint.diffX * - 1
+        else -> waypoint.diffX
+      }
+
+      waypoint.diffX = diffX
+      waypoint.diffY = diffY
     }
-    val ordinalValue = (direction.ordinal + ordinalOffset) % 4
-    direction = Direction.values()[ordinalValue]
   }
 }
 
@@ -53,16 +66,17 @@ fun main() {
     val action = it.get(0).toString()
     val value = it.subSequence(1, it.length).toString().toInt()
     when(action) {
-      "N" -> ship.currentY = ship.currentY - value
-      "S" -> ship.currentY = ship.currentY + value
-      "E" -> ship.currentX = ship.currentX + value
-      "W" -> ship.currentX = ship.currentX - value
+      "N" -> ship.waypoint.diffY -= value
+      "S" -> ship.waypoint.diffY += value
+      "E" -> ship.waypoint.diffX += value
+      "W" -> ship.waypoint.diffX -= value
       "F" -> ship.moveForward(value)
       else -> ship.turn(action, value)
     }
-    println(ship.currentX)
-    println(ship.currentY)
-    println(ship.direction.name)
+    println("ship x " + ship.currentX)
+    println("ship y " + ship.currentY)
+    println("waypoint x " + ship.waypoint.diffX)
+    println("waypoint y " + ship.waypoint.diffY)
   }
   println(calculateManhattanDistance(0, 0, ship.currentX, ship.currentY))
 
