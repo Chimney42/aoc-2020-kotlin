@@ -3,15 +3,32 @@ import java.io.InputStream
 
 fun main() {
   val lines = File("data/day13-input.txt").readLines()
-  val startTime = lines[0].toInt()
-  val busses = lines[1].split(",").filter{ it != "x" }.map{ it.toInt() }
-  println(startTime)
-  println(busses)
-
-  val waitingTimesByBus = busses.map {
-    Math.ceil(startTime.toDouble() / it).toInt() * it - startTime
+  val busIdToOffset = hashMapOf<Int, Int>()
+  var index = 0
+  lines[1].split(",").forEach {
+    if (it != "x") {
+      busIdToOffset.put(it.toInt(), index)
+    }
+    index++
   }
-  val shortestWaitingTime = waitingTimesByBus.minByOrNull{it} ?: 0
-  val soonestBus = busses[waitingTimesByBus.indexOf(shortestWaitingTime)]
-  println(soonestBus * shortestWaitingTime)
+  println(busIdToOffset)
+
+  var firstBus = busIdToOffset.entries.find { it.value == 0 }!!
+  var cadence = firstBus.key.toLong()
+  busIdToOffset.remove(firstBus.key)
+  
+  var currentT: Long = 0
+  busIdToOffset.forEach {
+    var tNotFound: Boolean = true
+    do {
+      if ((currentT + it.value) % it.key == 0.toLong()) {
+        cadence *= it.key
+        tNotFound = false
+      } else {
+        currentT += cadence
+      }
+    } while (tNotFound)
+  }
+
+  print(currentT)
 }
