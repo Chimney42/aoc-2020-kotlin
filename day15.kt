@@ -2,21 +2,14 @@ import java.io.File
 import java.io.InputStream
 
 fun main() {
-  val numbers = File("data/day15-input.txt").readLines()[0].split(",").map{it.toInt()}.toMutableList()
-  val calledNumbers = mutableSetOf<Int>()
-  while (numbers.size < 2020) {
-    println(numbers)
-    val lastNumber = numbers.last()
-    var newNumber: Int = 0
-    println(calledNumbers)
-    if (calledNumbers.contains(lastNumber)) {
-      val lastIndex = numbers.dropLast(1).indexOfLast{it.equals(lastNumber)}
-      newNumber = numbers.lastIndex - lastIndex
-    }
-    numbers.add(newNumber)
-    if (numbers.count{it.equals(newNumber)} >= 2) {
-      calledNumbers.add(newNumber)
-    }
+  val numbersToIndex = hashMapOf(11.toLong() to 1.toLong(), 0.toLong() to 2.toLong(), 1.toLong() to 3.toLong(), 10.toLong() to 4.toLong(), 5.toLong() to 5.toLong())
+  var lastNumber = 19.toLong()
+  var index = 6.toLong()
+  while (index < 30000000) {
+    val lastIndex = numbersToIndex.getOrElse(lastNumber) {index}
+    numbersToIndex.put(lastNumber, index)
+    lastNumber = index - lastIndex
+    index++
   }
-  print(numbers.last())
+  print(lastNumber)
 } 
