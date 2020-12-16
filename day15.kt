@@ -1,6 +1,3 @@
-import java.io.File
-import java.io.InputStream
-
 fun main() {
   val numbersToIndex = hashMapOf(11.toLong() to 1.toLong(), 0.toLong() to 2.toLong(), 1.toLong() to 3.toLong(), 10.toLong() to 4.toLong(), 5.toLong() to 5.toLong())
   var lastNumber = 19.toLong()
