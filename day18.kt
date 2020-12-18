@@ -4,11 +4,21 @@ import java.io.InputStream
 
 fun calculate(term: String): Long {
   println("full term: $term")
-  val regexResult = "(\\([^()]+\\))".toRegex().find(term)
-  if (regexResult != null) {
-    val (termBetweenParenthesis) = regexResult.destructured
+  val parenthesisRegex = "(\\([^()]+\\))".toRegex()
+  val additionRegex = "(\\d+ \\+ \\d+)".toRegex()
+  
+  if (parenthesisRegex.containsMatchIn(term)) {
+    val (termBetweenParenthesis) = parenthesisRegex.find(term)!!.destructured
+    println("termBetweenParenthesis: $termBetweenParenthesis")
     val index = term.indexOf(termBetweenParenthesis)
     val newTerm = term.substring(0, index) + calculate(termBetweenParenthesis.slice(IntRange(1, termBetweenParenthesis.length-2))) + term.substring(index+termBetweenParenthesis.length)
+    println("new term: $newTerm")
+    return calculate(newTerm)
+  } else if (additionRegex.containsMatchIn(term) && !additionRegex.find(term)!!.destructured.toList()[0].equals(term)) {
+    val (additionTerm) = additionRegex.find(term)!!.destructured
+    println("additionTerm: $additionTerm")
+    val index = term.indexOf(additionTerm)
+    val newTerm = term.substring(0, index) + calculate(additionTerm) + term.substring(index+additionTerm.length)
     println("new term: $newTerm")
     return calculate(newTerm)
   } else {
